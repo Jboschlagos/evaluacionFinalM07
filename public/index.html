@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      PALASED — Plataforma de Análisis Latinoamericano de Estadísticas y Datos
+    </title>
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- ══════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════ -->
+    <header class="header">
+      <div class="header__brand">
+        <div class="header__logo">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle
+              cx="18"
+              cy="18"
+              r="17"
+              stroke="#00c5ff"
+              stroke-width="1.5"
+            />
+            <ellipse
+              cx="18"
+              cy="18"
+              rx="8"
+              ry="17"
+              stroke="#00c5ff"
+              stroke-width="1"
+            />
+            <line
+              x1="1"
+              y1="18"
+              x2="35"
+              y2="18"
+              stroke="#00c5ff"
+              stroke-width="1"
+            />
+            <line
+              x1="4"
+              y1="10"
+              x2="32"
+              y2="10"
+              stroke="#00c5ff"
+              stroke-width="0.8"
+              stroke-dasharray="2,2"
+            />
+            <line
+              x1="4"
+              y1="26"
+              x2="32"
+              y2="26"
+              stroke="#00c5ff"
+              stroke-width="0.8"
+              stroke-dasharray="2,2"
+            />
+          </svg>
+        </div>
+        <div class="header__text">
+          <h1 class="header__title">PALASED</h1>
+          <p class="header__sub">
+            Plataforma de Análisis Latinoamericano de Estadísticas y Datos
+          </p>
+        </div>
+      </div>
+      <div class="header__meta">
+        <span class="header__badge">CEPAL · Naciones Unidas</span>
+        <div class="header__status">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-text" id="statusText">Conectando...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════════
+       LAYOUT PRINCIPAL
+  ══════════════════════════════════════ -->
+    <div class="layout">
+      <!-- MAPA -->
+      <div class="map-wrapper">
+        <div id="map"></div>
+        <div class="map-overlay">
+          <div class="map-legend">
+            <span class="legend-dot legend-dot--active"></span> País registrado
+            <span
+              class="legend-dot legend-dot--new"
+              style="margin-left: 12px"
+            ></span>
+            Nuevo
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL LATERAL -->
+      <aside class="panel">
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" data-tab="lista">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+            Lista
+          </button>
+          <button class="tab" data-tab="agregar">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="16" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+            Agregar
+          </button>
+          <button class="tab" data-tab="eliminar">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4h6v2" />
+            </svg>
+            Eliminar
+          </button>
+        </div>
+
+        <!-- ── TAB: LISTA ── -->
+        <div class="tab-content active" id="tab-lista">
+          <div class="panel__controls">
+            <span class="panel__label">Registros por página</span>
+            <div class="selector-group">
+              <button class="sel-btn active" data-limite="5">5</button>
+              <button class="sel-btn" data-limite="10">10</button>
+              <button class="sel-btn" data-limite="20">20</button>
+            </div>
+          </div>
+
+          <div id="tabla-wrapper">
+            <div class="loading" id="loading">
+              <div class="spinner"></div>
+              <span>Cargando datos...</span>
+            </div>
+            <table class="tabla" id="tabla" style="display: none">
+              <thead>
+                <tr>
+                  <th>País</th>
+                  <th>Continente</th>
+                  <th>Población</th>
+                  <th>PIB 2019</th>
+                  <th>PIB 2020</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-body"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <button class="btn-page" id="btn-prev" disabled>← Anterior</button>
+            <span class="page-info" id="page-info">Página 1</span>
+            <button class="btn-page" id="btn-next">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- ── TAB: AGREGAR ── -->
+        <div class="tab-content" id="tab-agregar">
+          <div class="form-header">
+            <h3 class="form-title">Registrar nuevo país</h3>
+            <p class="form-desc">
+              Complete todos los campos para agregar un país a la base de datos.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nombre del país</label>
+            <input
+              class="form-input"
+              type="text"
+              id="add-nombre"
+              placeholder="ej: Portugal"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Continente</label>
+            <select class="form-input" id="add-continente">
+              <option value="">Seleccionar...</option>
+              <option value="America">América</option>
+              <option value="Europa">Europa</option>
+              <option value="Asia">Asia</option>
+              <option value="Africa">África</option>
+              <option value="Oceania">Oceanía</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Población</label>
+              <input
+                class="form-input"
+                type="number"
+                id="add-poblacion"
+                placeholder="ej: 10280000"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">PIB 2019 (USD)</label>
+              <input
+                class="form-input"
+                type="number"
+                id="add-pib2019"
+                placeholder="ej: 23430"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">PIB 2020 (USD)</label>
+              <input
+                class="form-input"
+                type="number"
+                id="add-pib2020"
+                placeholder="ej: 22050"
+              />
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-agregar">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Agregar país
+          </button>
+
+          <div class="msg" id="msg-agregar"></div>
+        </div>
+
+        <!-- ── TAB: ELIMINAR ── -->
+        <div class="tab-content" id="tab-eliminar">
+          <div class="form-header">
+            <h3 class="form-title">Eliminar país</h3>
+            <p class="form-desc">
+              Ingrese el nombre exacto del país que desea eliminar del registro.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nombre del país</label>
+            <input
+              class="form-input"
+              type="text"
+              id="del-nombre"
+              placeholder="ej: Canada"
+            />
+          </div>
+
+          <div class="warning-box">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            Esta acción elimina el país de todas las tablas y no puede
+            deshacerse.
+          </div>
+
+          <button class="btn-danger" id="btn-eliminar">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14H6L5 6" />
+            </svg>
+            Eliminar país
+          </button>
+
+          <div class="msg" id="msg-eliminar"></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <!-- App JS -->
+    <script src="app.js"></script>
+  </body>
+</html>
