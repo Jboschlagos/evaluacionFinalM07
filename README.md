@@ -1,7 +1,7 @@
 # 🌍 PALASED — Plataforma de Análisis Latinoamericano de Estadísticas y Datos
 
 > Evaluación Final Módulo 7 — Fullstack JavaScript  
-> Stack: **Node.js · Express · PostgreSQL · pg · pg-cursor · HTML · CSS · JavaScript**
+> Stack: **Node.js · Express · PostgreSQL · pg · pg-cursor · HTML · CSS · JavaScript · Leaflet-map**
 
 ---
 
